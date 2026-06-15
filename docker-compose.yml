@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: orders-api-postgres
+    environment:
+      POSTGRES_DB: orders_db
+      POSTGRES_USER: orders_user
+      POSTGRES_PASSWORD: orders_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - orders_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  orders_postgres_data:
