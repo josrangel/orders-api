@@ -100,4 +100,8 @@ public class ProductEntity {
     public void setActive(Boolean active) {
         this.active = active;
     }
+
+    public void decreaseStock(Integer quantity) {
+        this.stock = this.stock - quantity;
+    }
 }

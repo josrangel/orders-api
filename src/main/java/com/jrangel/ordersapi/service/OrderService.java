@@ -8,9 +8,7 @@ import com.jrangel.ordersapi.entity.OrderEntity;
 import com.jrangel.ordersapi.entity.OrderItemEntity;
 import com.jrangel.ordersapi.entity.ProductEntity;
 import com.jrangel.ordersapi.entity.UserEntity;
-import com.jrangel.ordersapi.exception.OrderNotFoundException;
-import com.jrangel.ordersapi.exception.ProductNotFoundException;
-import com.jrangel.ordersapi.exception.UserNotFoundException;
+import com.jrangel.ordersapi.exception.*;
 import com.jrangel.ordersapi.repository.OrderRepository;
 import com.jrangel.ordersapi.repository.ProductRepository;
 import com.jrangel.ordersapi.repository.UserRepository;
@@ -47,8 +45,12 @@ public class OrderService {
             ProductEntity product = productRepository.findById(itemRequest.productId())
                     .orElseThrow(() -> new ProductNotFoundException(itemRequest.productId()));
 
+            validateProductCanBeSold(product, itemRequest.quantity());
+
             OrderItemEntity item = new OrderItemEntity(product, itemRequest.quantity());
             order.addItem(item);
+
+            product.decreaseStock(itemRequest.quantity());
         }
 
         order.calculateTotal();
@@ -96,5 +98,19 @@ public class OrderService {
                 order.getCreatedAt(),
                 items
         );
+    }
+
+    private void validateProductCanBeSold(ProductEntity product, Integer requestedQuantity) {
+        if (!Boolean.TRUE.equals(product.getActive())) {
+            throw new InactiveProductException(product.getId());
+        }
+
+        if (product.getStock() < requestedQuantity) {
+            throw new InsufficientStockException(
+                    product.getId(),
+                    product.getStock(),
+                    requestedQuantity
+            );
+        }
     }
 }
