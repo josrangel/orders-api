@@ -55,4 +55,14 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
     }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleOrderNotFound(OrderNotFoundException exception) {
+        return new ApiErrorResponse(
+                exception.getMessage(),
+                "ORDER_NOT_FOUND",
+                LocalDateTime.now()
+        );
+    }
 }
