@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -39,19 +42,40 @@ public class OrderService {
         UserEntity user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new UserNotFoundException(request.userId()));
 
+        Map<Long, Integer> requestedQuantityByProductId = request.items()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        CreateOrderItemRequest::productId,
+                        Collectors.summingInt(CreateOrderItemRequest::quantity)
+                ));
+
+        List<ProductEntity> products = productRepository.findAllById(
+                requestedQuantityByProductId.keySet()
+        );
+
+        validateAllProductsExist(requestedQuantityByProductId, products);
+
+        Map<Long, ProductEntity> productById = products.stream()
+                .collect(Collectors.toMap(
+                        ProductEntity::getId,
+                        Function.identity()
+                ));
+
+        validateProductsCanBeSold(requestedQuantityByProductId, productById);
+
         OrderEntity order = new OrderEntity(user);
 
         for (CreateOrderItemRequest itemRequest : request.items()) {
-            ProductEntity product = productRepository.findById(itemRequest.productId())
-                    .orElseThrow(() -> new ProductNotFoundException(itemRequest.productId()));
-
-            validateProductCanBeSold(product, itemRequest.quantity());
+            ProductEntity product = productById.get(itemRequest.productId());
 
             OrderItemEntity item = new OrderItemEntity(product, itemRequest.quantity());
             order.addItem(item);
-
-            product.decreaseStock(itemRequest.quantity());
         }
+
+        requestedQuantityByProductId.forEach((productId, quantity) -> {
+            ProductEntity product = productById.get(productId);
+            product.decreaseStock(quantity);
+        });
 
         order.calculateTotal();
 
@@ -98,6 +122,38 @@ public class OrderService {
                 order.getCreatedAt(),
                 items
         );
+    }
+
+    private void validateAllProductsExist(
+            Map<Long, Integer> requestedQuantityByProductId,
+            List<ProductEntity> products
+    ) {
+        if (products.size() != requestedQuantityByProductId.size()) {
+            Map<Long, ProductEntity> productById = products.stream()
+                    .collect(Collectors.toMap(
+                            ProductEntity::getId,
+                            Function.identity()
+                    ));
+
+            Long missingProductId = requestedQuantityByProductId.keySet()
+                    .stream()
+                    .filter(productId -> !productById.containsKey(productId))
+                    .findFirst()
+                    .orElseThrow();
+
+            throw new ProductNotFoundException(missingProductId);
+        }
+    }
+
+    private void validateProductsCanBeSold(
+            Map<Long, Integer> requestedQuantityByProductId,
+            Map<Long, ProductEntity> productById
+    ) {
+        requestedQuantityByProductId.forEach((productId, requestedQuantity) -> {
+            ProductEntity product = productById.get(productId);
+
+            validateProductCanBeSold(product, requestedQuantity);
+        });
     }
 
     private void validateProductCanBeSold(ProductEntity product, Integer requestedQuantity) {
