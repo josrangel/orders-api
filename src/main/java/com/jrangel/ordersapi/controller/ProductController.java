@@ -2,6 +2,7 @@ package com.jrangel.ordersapi.controller;
 
 import com.jrangel.ordersapi.dto.CreateProductRequest;
 import com.jrangel.ordersapi.dto.ProductResponse;
+import com.jrangel.ordersapi.dto.UpdateProductRequest;
 import com.jrangel.ordersapi.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,5 +34,23 @@ public class ProductController {
     @GetMapping
     public List<ProductResponse> findAll() {
         return productService.findAllActive();
+    }
+
+    @PutMapping("/{id}")
+    public ProductResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProductRequest request
+    ) {
+        return productService.update(id, request);
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ProductResponse deactivate(@PathVariable Long id) {
+        return productService.deactivate(id);
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ProductResponse activate(@PathVariable Long id) {
+        return productService.activate(id);
     }
 }

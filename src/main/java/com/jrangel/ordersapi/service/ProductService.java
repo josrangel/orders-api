@@ -2,6 +2,7 @@ package com.jrangel.ordersapi.service;
 
 import com.jrangel.ordersapi.dto.CreateProductRequest;
 import com.jrangel.ordersapi.dto.ProductResponse;
+import com.jrangel.ordersapi.dto.UpdateProductRequest;
 import com.jrangel.ordersapi.entity.ProductEntity;
 import com.jrangel.ordersapi.exception.ProductNotFoundException;
 import com.jrangel.ordersapi.repository.ProductRepository;
@@ -47,6 +48,41 @@ public class ProductService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public ProductResponse update(Long id, UpdateProductRequest request) {
+        ProductEntity product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.update(
+                request.name(),
+                request.description(),
+                request.price(),
+                request.stock()
+        );
+
+        return toResponse(product);
+    }
+
+    @Transactional
+    public ProductResponse deactivate(Long id) {
+        ProductEntity product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.deactivate();
+
+        return toResponse(product);
+    }
+
+    @Transactional
+    public ProductResponse activate(Long id) {
+        ProductEntity product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.activate();
+
+        return toResponse(product);
     }
 
     private ProductResponse toResponse(ProductEntity product) {

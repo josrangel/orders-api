@@ -104,4 +104,19 @@ public class ProductEntity {
     public void decreaseStock(Integer quantity) {
         this.stock = this.stock - quantity;
     }
+
+    public void update(String name, String description, BigDecimal price, Integer stock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
 }
