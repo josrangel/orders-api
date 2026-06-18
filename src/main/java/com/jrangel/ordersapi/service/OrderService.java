@@ -1,9 +1,6 @@
 package com.jrangel.ordersapi.service;
 
-import com.jrangel.ordersapi.dto.CreateOrderItemRequest;
-import com.jrangel.ordersapi.dto.CreateOrderRequest;
-import com.jrangel.ordersapi.dto.OrderItemResponse;
-import com.jrangel.ordersapi.dto.OrderResponse;
+import com.jrangel.ordersapi.dto.*;
 import com.jrangel.ordersapi.entity.OrderEntity;
 import com.jrangel.ordersapi.entity.OrderItemEntity;
 import com.jrangel.ordersapi.entity.ProductEntity;
@@ -12,6 +9,8 @@ import com.jrangel.ordersapi.exception.*;
 import com.jrangel.ordersapi.repository.OrderRepository;
 import com.jrangel.ordersapi.repository.ProductRepository;
 import com.jrangel.ordersapi.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,11 +92,11 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> findByUserId(Long userId) {
-        return orderRepository.findByUserId(userId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public PageResponse<OrderResponse> findByUserId(Long userId, Pageable pageable) {
+        Page<OrderResponse> orders = orderRepository.findByUserId(userId, pageable)
+                .map(this::toResponse);
+
+        return PageResponse.from(orders);
     }
 
     private OrderResponse toResponse(OrderEntity order) {

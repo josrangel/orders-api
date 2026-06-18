@@ -1,11 +1,14 @@
 package com.jrangel.ordersapi.service;
 
 import com.jrangel.ordersapi.dto.CreateProductRequest;
+import com.jrangel.ordersapi.dto.PageResponse;
 import com.jrangel.ordersapi.dto.ProductResponse;
 import com.jrangel.ordersapi.dto.UpdateProductRequest;
 import com.jrangel.ordersapi.entity.ProductEntity;
 import com.jrangel.ordersapi.exception.ProductNotFoundException;
 import com.jrangel.ordersapi.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,11 +46,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> findAllActive() {
-        return productRepository.findByActiveTrue()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public PageResponse<ProductResponse> findAllActive(Pageable pageable) {
+        Page<ProductResponse> products = productRepository.findByActiveTrue(pageable)
+                .map(this::toResponse);
+
+        return PageResponse.from(products);
     }
 
     @Transactional
