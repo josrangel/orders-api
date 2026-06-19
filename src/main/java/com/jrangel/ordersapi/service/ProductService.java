@@ -88,6 +88,15 @@ public class ProductService {
         return toResponse(product);
     }
 
+    @Transactional(readOnly = true)
+    public PageResponse<ProductResponse> searchByName(String name, Pageable pageable) {
+        Page<ProductResponse> products = productRepository
+                .findByActiveTrueAndNameContainingIgnoreCase(name, pageable)
+                .map(this::toResponse);
+
+        return PageResponse.from(products);
+    }
+
     private ProductResponse toResponse(ProductEntity product) {
         return new ProductResponse(
                 product.getId(),

@@ -38,12 +38,19 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("createdAt").descending()
-        );
+        Pageable pageable = buildPageable(page, size);
 
         return orderService.findByUserId(userId, pageable);
+    }
+
+    private Pageable buildPageable(int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 50);
+
+        return PageRequest.of(
+                safePage,
+                safeSize,
+                Sort.by("createdAt").descending()
+        );
     }
 }

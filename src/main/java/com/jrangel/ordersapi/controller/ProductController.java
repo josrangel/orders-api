@@ -38,11 +38,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("createdAt").descending()
-        );
+        Pageable pageable = buildPageable(page, size);
 
         return productService.findAllActive(pageable);
     }
@@ -63,5 +59,31 @@ public class ProductController {
     @PatchMapping("/{id}/activate")
     public ProductResponse activate(@PathVariable Long id) {
         return productService.activate(id);
+    }
+
+    @GetMapping("/search")
+    public PageResponse<ProductResponse> searchByName(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = buildPageable(page, size);
+
+        if (name == null || name.isBlank()) {
+            return productService.findAllActive(pageable);
+        }
+
+        return productService.searchByName(name, pageable);
+    }
+
+    private Pageable buildPageable(int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 50);
+
+        return PageRequest.of(
+                safePage,
+                safeSize,
+                Sort.by("createdAt").descending()
+        );
     }
 }
