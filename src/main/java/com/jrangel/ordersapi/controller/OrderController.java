@@ -4,6 +4,8 @@ import com.jrangel.ordersapi.dto.CreateOrderRequest;
 import com.jrangel.ordersapi.dto.OrderResponse;
 import com.jrangel.ordersapi.dto.PageResponse;
 import com.jrangel.ordersapi.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/orders")
+@Tag(name = "Orders", description = "Operaciones para administrar las ordenes de compra")
 public class OrderController {
 
     private final OrderService orderService;
@@ -21,17 +24,20 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    @Operation(summary = "Crear orden")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {
         return orderService.create(request);
     }
 
+    @Operation(summary = "Consultar orden")
     @GetMapping("/{id}")
     public OrderResponse findById(@PathVariable Long id) {
         return orderService.findById(id);
     }
 
+    @Operation(summary = "Consultar orden por id de usuario")
     @GetMapping("/by-user/{userId}")
     public PageResponse<OrderResponse> findByUserId(
             @PathVariable Long userId,
