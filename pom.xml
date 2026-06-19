@@ -11,8 +11,8 @@
 	<groupId>com.jrangel</groupId>
 	<artifactId>orders-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>orders-api</name>
+	<description>API de práctica con Spring Boot, PostgreSQL, Flyway, Docker y OpenAPI</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -84,6 +84,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>3.0.3</version>
 		</dependency>
 	</dependencies>
 
