@@ -5,6 +5,8 @@ import com.jrangel.ordersapi.dto.PageResponse;
 import com.jrangel.ordersapi.dto.ProductResponse;
 import com.jrangel.ordersapi.dto.UpdateProductRequest;
 import com.jrangel.ordersapi.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
+@Tag(name = "Products", description = "Operaciones para administrar productos")
 public class ProductController {
 
     private final ProductService productService;
@@ -22,17 +25,20 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @Operation(summary = "Crear producto")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse create(@Valid @RequestBody CreateProductRequest request) {
         return productService.create(request);
     }
 
+    @Operation(summary = "Consultar producto por Id")
     @GetMapping("/{id}")
     public ProductResponse findById(@PathVariable Long id) {
         return productService.findById(id);
     }
 
+    @Operation(summary = "Obtener productos")
     @GetMapping
     public PageResponse<ProductResponse> findAll(
             @RequestParam(defaultValue = "0") int page,
@@ -43,6 +49,7 @@ public class ProductController {
         return productService.findAllActive(pageable);
     }
 
+    @Operation(summary = "Actualizar producto")
     @PutMapping("/{id}")
     public ProductResponse update(
             @PathVariable Long id,
@@ -51,16 +58,19 @@ public class ProductController {
         return productService.update(id, request);
     }
 
+    @Operation(summary = "Desactivar producto")
     @PatchMapping("/{id}/deactivate")
     public ProductResponse deactivate(@PathVariable Long id) {
         return productService.deactivate(id);
     }
 
+    @Operation(summary = "Activar producto")
     @PatchMapping("/{id}/activate")
     public ProductResponse activate(@PathVariable Long id) {
         return productService.activate(id);
     }
 
+    @Operation(summary = "Buscar productos activos por nombre")
     @GetMapping("/search")
     public PageResponse<ProductResponse> searchByName(
             @RequestParam String name,
