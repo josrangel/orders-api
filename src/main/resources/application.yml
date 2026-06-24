@@ -3,9 +3,9 @@ spring:
     name: orders-api
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/orders_db
-    username: orders_user
-    password: orders_password
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/orders_db}
+    username: ${SPRING_DATASOURCE_USERNAME:orders_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:orders_password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -18,3 +18,8 @@ spring:
 
   flyway:
     enabled: true
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
