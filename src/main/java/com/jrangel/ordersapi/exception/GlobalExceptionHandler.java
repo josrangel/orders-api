@@ -85,4 +85,24 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
     }
+
+    @ExceptionHandler(AuthUserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiErrorResponse handleAuthUserAlreadyExists(AuthUserAlreadyExistsException exception) {
+        return new ApiErrorResponse(
+                exception.getMessage(),
+                "AUTH_USER_ALREADY_EXISTS",
+                LocalDateTime.now()
+        );
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiErrorResponse handleInvalidCredentials(InvalidCredentialsException exception) {
+        return new ApiErrorResponse(
+                exception.getMessage(),
+                "INVALID_CREDENTIALS",
+                LocalDateTime.now()
+        );
+    }
 }
