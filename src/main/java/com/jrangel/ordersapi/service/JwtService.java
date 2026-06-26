@@ -1,6 +1,7 @@
 package com.jrangel.ordersapi.service;
 
 import com.jrangel.ordersapi.entity.AuthUserEntity;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,5 +38,29 @@ public class JwtService {
                 .expiration(Date.from(expiration))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public String extractEmail(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public boolean isTokenValid(String token, AuthUserEntity user) {
+        String email = extractEmail(token);
+
+        return email.equals(user.getEmail()) && !isTokenExpired(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        Date expiration = extractAllClaims(token).getExpiration();
+
+        return expiration.before(new Date());
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
