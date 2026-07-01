@@ -29,11 +29,19 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Públicos
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Auth público
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+
+                        // Crear admins solo con token ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register-admin").hasRole("ADMIN")
+
+                        // Swagger público
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+
+                        // Health público
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
@@ -48,10 +56,9 @@ public class SecurityConfig {
                         // Orders - USER o ADMIN
                         .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
 
-                        // Users - por ahora USER o ADMIN
+                        // Users - USER o ADMIN
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
 
-                        // Cualquier otro endpoint requiere login
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

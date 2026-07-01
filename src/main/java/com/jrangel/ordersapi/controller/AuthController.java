@@ -37,7 +37,6 @@ public class AuthController {
         return authService.login(request);
     }
 
-    @SecurityRequirements
     @Operation(summary = "Registrar usuario administrador")
     @PostMapping("/register-admin")
     @ResponseStatus(HttpStatus.CREATED)
