@@ -29,12 +29,29 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Públicos
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Products - lectura para USER o ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("USER", "ADMIN")
+
+                        // Products - escritura solo ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasRole("ADMIN")
+
+                        // Orders - USER o ADMIN
+                        .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
+
+                        // Users - por ahora USER o ADMIN
+                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
+
+                        // Cualquier otro endpoint requiere login
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
