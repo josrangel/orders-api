@@ -66,6 +66,25 @@ public class AuthService {
         return toResponse(user, token);
     }
 
+    @Transactional
+    public AuthResponse registerAdmin(RegisterRequest request) {
+        if (authUserRepository.existsByEmail(request.email())) {
+            throw new AuthUserAlreadyExistsException(request.email());
+        }
+
+        AuthUserEntity user = new AuthUserEntity(
+                request.email(),
+                passwordEncoder.encode(request.password()),
+                AuthRole.ADMIN
+        );
+
+        AuthUserEntity savedUser = authUserRepository.save(user);
+
+        String token = jwtService.generateToken(savedUser);
+
+        return toResponse(savedUser, token);
+    }
+
     private AuthResponse toResponse(AuthUserEntity user, String token) {
         return new AuthResponse(
                 token,
