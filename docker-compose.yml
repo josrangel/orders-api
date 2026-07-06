@@ -23,9 +23,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orders_db
       SPRING_DATASOURCE_USERNAME: orders_user
       SPRING_DATASOURCE_PASSWORD: orders_password
+      JWT_SECRET: 1234567890123456789012345678901234567890123456789012345678901234
+      JWT_EXPIRATION_MINUTES: 60
     ports:
       - "8080:8080"
 
