@@ -27,3 +27,9 @@ app:
     jwt:
       secret: ${JWT_SECRET:1234567890123456789012345678901234567890123456789012345678901234}
       expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+
+    aws:
+      region: ${AWS_REGION:us-east-1}
+      s3:
+        bucket: ${AWS_S3_BUCKET:orders-api-files}
+        endpoint: ${AWS_S3_ENDPOINT:}
