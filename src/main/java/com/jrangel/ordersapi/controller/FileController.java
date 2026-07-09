@@ -1,11 +1,14 @@
 package com.jrangel.ordersapi.controller;
 
+import com.jrangel.ordersapi.dto.FileItemResponse;
 import com.jrangel.ordersapi.dto.FileUploadResponse;
 import com.jrangel.ordersapi.service.FileStorageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/files")
@@ -29,5 +32,16 @@ public class FileController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(file);
+    }
+
+    @GetMapping
+    public List<FileItemResponse> listFiles() {
+        return fileStorageService.listFiles();
+    }
+
+    @DeleteMapping("/{fileName}")
+    public ResponseEntity<Void> delete(@PathVariable String fileName) {
+        fileStorageService.delete(fileName);
+        return ResponseEntity.noContent().build();
     }
 }

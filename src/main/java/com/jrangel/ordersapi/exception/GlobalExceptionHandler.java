@@ -1,6 +1,7 @@
 package com.jrangel.ordersapi.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -104,5 +105,31 @@ public class GlobalExceptionHandler {
                 "INVALID_CREDENTIALS",
                 LocalDateTime.now()
         );
+    }
+
+    @ExceptionHandler(FileNotFoundStorageException.class)
+    public ResponseEntity<ApiErrorResponse> handleFileNotFoundStorageException(
+            FileNotFoundStorageException exception
+    ) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                exception.getMessage(),
+                "FILE_NOT_FOUND",
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ApiErrorResponse> handleFileStorageException(
+            FileStorageException exception
+    ) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                exception.getMessage(),
+                "FILE_STORAGE_ERROR",
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
