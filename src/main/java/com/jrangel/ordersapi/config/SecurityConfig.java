@@ -67,6 +67,9 @@ public class SecurityConfig {
                         // Users - USER o ADMIN
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
 
+                        // Files - USER o ADMIN
+                        .requestMatchers("/api/files/**").hasAnyRole("USER", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
